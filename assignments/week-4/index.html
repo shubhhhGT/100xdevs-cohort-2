@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      // Global ID to uniquely identify each todo item.
+      let globalId = 1;
+
+      // Arrays to maintain the current and previous state of todo items.
+      let todoState = [];
+      let oldTodoState = [];
+
+      /**
+       * Adds a todo item to the DOM.
+       * @param {Object} todo - The todo item to add.
+       */
+      function addTodoToDom(todo) {
+        const todos = document.getElementById("todos");
+        const todoElement = document.createElement("div");
+        todoElement.setAttribute("id", `todo-${todo.id}`);
+        const title = document.createElement("h1");
+        const description = document.createElement("h5");
+
+        title.innerText = todo.title;
+        description.innerText = todo.description;
+
+        todoElement.appendChild(title);
+        todoElement.appendChild(description);
+        todos.appendChild(todoElement);
+      }
+
+      /**
+       * Removes a todo item from the DOM.
+       * @param {Object} todo - The todo item to remove.
+       */
+      function removeTodoFromDom(todo) {
+        const todoElement = document.getElementById(`todo-${todo.id}`);
+        if (todoElement) {
+          todoElement.remove();
+        }
+      }
+
+      /**
+       * Updates a todo item in the DOM.
+       * @param {Object} oldTodo - The old todo item.
+       * @param {Object} newTodo - The new todo item.
+       */
+      function updateTodoInDom(oldTodo, newTodo) {
+        const todoElement = document.getElementById(`todo-${oldTodo.id}`);
+        if (todoElement) {
+          const title = todoElement.querySelector("h1");
+          const description = todoElement.querySelector("h5");
+
+          title.innerText = newTodo.title;
+          description.innerText = newTodo.description;
+        }
+      }
+
+      /**
+       * Updates the state of the todo list and the DOM.
+       * @param {Array<Object>} newTodos - The new state of the todo list.
+       */
+      function updateState(newTodos) {
+        // Calculate the differences between the new and old state.
+        const added = [];
+        const deleted = [];
+        const updated = [];
+
+        const oldTodosMap = new Map(
+          oldTodoState.map((todo) => [todo.id, todo])
+        );
+        const newTodosMap = new Map(newTodos.map((todo) => [todo.id, todo]));
+
+        // Identify added and updated todos.
+        newTodos.forEach((todo) => {
+          if (!oldTodosMap.has(todo.id)) {
+            added.push(todo);
+          } else {
+            updated.push({ old: oldTodosMap.get(todo.id), new: todo });
+          }
+        });
+
+        // Identify deleted todos.
+        oldTodoState.forEach((todo) => {
+          if (!newTodosMap.has(todo.id)) {
+            deleted.push(todo);
+          }
+        });
+
+        // Update the DOM.
+        added.forEach((todo) => addTodoToDom(todo));
+        deleted.forEach((todo) => removeTodoFromDom(todo));
+        updated.forEach(({ old, new: newTodo }) =>
+          updateTodoInDom(old, newTodo)
+        );
+
+        // Update the old state.
+        oldTodoState = [...newTodos];
+      }
+
+      /**
+       * Adds a new todo item to the state and updates the DOM.
+       */
+      function addTodo() {
+        const title = document.getElementById("title").value;
+        const description = document.getElementById("description").value;
+        todoState.push({
+          title: title,
+          description: description,
+          id: globalId++,
+        });
+        updateState(todoState);
+      }
+    </script>
+  </head>
+
+  <body>
+    <input type="text" id="title" placeholder="Todo title" /><br /><br />
+    <input
+      type="text"
+      id="description"
+      placeholder="Todo description"
+    /><br /><br />
+    <button onclick="addTodo()">Add todo</button>
+    <br /><br />
+
+    <div id="todos"></div>
+  </body>
+</html>
