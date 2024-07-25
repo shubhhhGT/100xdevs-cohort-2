@@ -22,6 +22,8 @@ This repository is dedicated to the assignments of the 100xDevs Cohort 2 program
 5. [Assignment 5: React Basics](assignments/week-4/)
 6. [Assignment 6: React Basics](assignments/week-5/)
 7. [Assignment 7: React Hooks](assignments/week-6/)
+8. [Assignment 8: React Projects](assignments/week-7/)
+9. [Assignment 9: Payments App](assignments/week-8/)
 
 ## Contributing
 
